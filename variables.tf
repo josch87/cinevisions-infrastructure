@@ -4,6 +4,7 @@ variable "aws_profile" {
 }
 
 variable "environment" {
+  description = "Environment to deploy into"
   type = string
 
   validation {
