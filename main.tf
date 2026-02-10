@@ -79,3 +79,8 @@ resource "aws_route_table" "cinevisions_public_rt" {
     Environment = var.environment
   }
 }
+
+resource "aws_route_table_association" "cinevisions_public_subnet_1_rt_association" {
+  route_table_id = aws_route_table.cinevisions_public_rt.id
+  subnet_id = aws_subnet.cinevisions_public_subnet_1.id
+}
