@@ -84,3 +84,22 @@ resource "aws_route_table_association" "cinevisions_public_subnet_1_rt_associati
   route_table_id = aws_route_table.cinevisions_public_rt.id
   subnet_id = aws_subnet.cinevisions_public_subnet_1.id
 }
+
+data "aws_ami" "amazon-linux_2023" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023*"]
+  }
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+
+resource "aws_instance" "cinevisions_web-server" {
+  ami = data.aws_ami.amazon-linux_2023.id
+  instance_type = var.cinevisions_web_server_instance_type
+}
