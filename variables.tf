@@ -11,7 +11,6 @@ variable "environment" {
     condition     = contains(["dev", "staging", "prod"], var.environment)
     error_message = "environment needs to be 'dev' or 'prod'"
   }
-
 }
 
 variable "aws_region" {
@@ -48,4 +47,22 @@ variable "cinevisions_public_subnet_1_cidr" {
   description = "CIDR block for the public subnet 1"
   type = string
   default = "10.0.0.0/28"
+}
+
+variable "cinevisions_private_subnet_1_cidr" {
+  description = "CIDR block for the private subnet 1"
+  type = string
+  default = "10.0.0.16/28"
+}
+
+variable "cinevisions_public_subnet_2_cidr" {
+  description = "CIDR block for the public subnet 2"
+  type = string
+  default = "10.0.0.32/28"
+}
+
+variable "cinevisions_private_subnet_2_cidr" {
+  description = "CIDR block for the private subnet 2"
+  type = string
+  default = "10.0.0.48/28"
 }
