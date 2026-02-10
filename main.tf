@@ -7,3 +7,8 @@ resource "aws_vpc" "cinevisions_vpc" {
     Environment = var.environment
   }
 }
+
+resource "aws_subnet" "cinevisions_public_subnet_1" {
+  vpc_id = aws_vpc.cinevisions_vpc.id
+  cidr_block = var.cinevisions_public_subnet_1_cidr
+}

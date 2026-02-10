@@ -25,3 +25,9 @@ variable "cinevisions_vpc_cidr" {
   type = string
   default = "10.0.0.0/24"
 }
+
+variable "cinevisions_public_subnet_1_cidr" {
+  description = "CIDR block for the public subnet 1"
+  type = string
+  default = "10.0.0.0/28"
+}
