@@ -85,6 +85,31 @@ resource "aws_route_table_association" "cinevisions_public_subnet_1_rt_associati
   subnet_id = aws_subnet.cinevisions_public_subnet_1.id
 }
 
+resource "aws_security_group" "webserver_sg" {
+  name = "webserver-sg"
+  description = "Security group for web server"
+  vpc_id = aws_vpc.cinevisions_vpc.id
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "webserver-sg"
+    Environment = var.environment
+  }
+}
+
 data "aws_ami" "amazon-linux_2023" {
   most_recent = true
   owners = ["amazon"]
@@ -102,4 +127,10 @@ data "aws_ami" "amazon-linux_2023" {
 resource "aws_instance" "cinevisions_web-server" {
   ami = data.aws_ami.amazon-linux_2023.id
   instance_type = var.cinevisions_web_server_instance_type
+  subnet_id = aws_subnet.cinevisions_public_subnet_1.id
+  vpc_security_group_ids = [aws_security_group.webserver_sg.id]
+  tags = {
+    Name = "cinevisions-web-server"
+    Environment = var.environment
+  }
 }
