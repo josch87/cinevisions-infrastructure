@@ -70,6 +70,10 @@ resource "aws_default_route_table" "cinevisions_default_rt" {
 
 resource "aws_route_table" "cinevisions_public_rt" {
   vpc_id = aws_vpc.cinevisions_vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.cinevisions_igw.id
+  }
   tags = {
     Name = "cinevisions-public-rt"
     Environment = var.environment
