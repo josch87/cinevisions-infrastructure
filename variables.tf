@@ -20,6 +20,24 @@ variable "aws_region" {
   default = "us-west-2"
 }
 
+variable "aws_availability_zones" {
+  description = "Availability zones by key"
+  type = map(string)
+  default = {
+    az1 = "us-west-2a",
+    az2 = "us-west-2b",
+  }
+
+  validation {
+    condition = (
+      length(var.aws_availability_zones) == 2 &&
+      alltrue([for k in ["az1", "az2"] : contains(keys(var.aws_availability_zones), k)]) &&
+      length(distinct(values(var.aws_availability_zones))) == 2
+    )
+    error_message = "aws_availability_zones must contain exactly two unique availability zones with keys 'az1' and 'az2'."
+  }
+}
+
 variable "cinevisions_vpc_cidr" {
   description = "CIDR block for the VPC"
   type = string
