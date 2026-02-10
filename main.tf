@@ -51,3 +51,27 @@ resource "aws_subnet" "cinevisions_private_subnet_2" {
     Environment = var.environment
   }
 }
+
+resource "aws_internet_gateway" "cinevisions_igw" {
+  vpc_id = aws_vpc.cinevisions_vpc.id
+  tags = {
+    Name = "cinevisions-igw"
+    Environment = var.environment
+  }
+}
+
+resource "aws_default_route_table" "cinevisions_default_rt" {
+  default_route_table_id = aws_vpc.cinevisions_vpc.default_route_table_id
+  tags = {
+    Name = "cinevisions-default-rt"
+    Environment = var.environment
+  }
+}
+
+resource "aws_route_table" "cinevisions_public_rt" {
+  vpc_id = aws_vpc.cinevisions_vpc.id
+  tags = {
+    Name = "cinevisions-public-rt"
+    Environment = var.environment
+  }
+}
