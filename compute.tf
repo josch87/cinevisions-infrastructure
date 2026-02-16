@@ -19,6 +19,7 @@ resource "aws_instance" "cinevisions_web_server" {
   vpc_security_group_ids = [aws_security_group.webserver_sg.id]
   key_name               = "vockey"
   user_data              = file("configure-webserver.sh")
+  iam_instance_profile   = "LabInstanceProfile"
 
   tags = {
     Name        = "cinevisions-web-server"
