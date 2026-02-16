@@ -83,6 +83,11 @@ resource "aws_route_table_association" "cinevisions_public_subnet_1_rt_associati
   subnet_id      = aws_subnet.cinevisions_public_subnet_1.id
 }
 
+resource "aws_route_table_association" "cinevisions_public_subnet_2_rt_association" {
+  route_table_id = aws_route_table.cinevisions_public_rt.id
+  subnet_id      = aws_subnet.cinevisions_public_subnet_2.id
+}
+
 resource "aws_security_group" "webserver_sg" {
   name        = "webserver-sg"
   description = "Security group for web server"
