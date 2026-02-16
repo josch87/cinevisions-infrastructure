@@ -49,20 +49,27 @@ sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
 sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
 sed -i "s/'localhost'/'$DBHost'/g" wp-config.php
 
-# Add hashed for salts
+# Fetch and inject WordPress secret keys/salts into wp-config.php
 SALTS_FILE="$(mktemp)"
 curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
 test -s "$SALTS_FILE"
 
 awk -v salts="$SALTS_FILE" '
-  BEGIN { inserted=0; skip=0 }
-  # Wenn die AUTH_KEY-Zeile kommt: Salts einfügen und die nächsten 7 define()-Zeilen überspringen
+  BEGIN { inserted=0; skipping=0 }
+
+  # Start: when AUTH_KEY is found, output the new salts and start skipping the old block
   $0 ~ /define\(\s*\x27AUTH_KEY\x27/ {
     if (!inserted) { system("cat " salts); inserted=1 }
-    skip=7
+    skipping=1
     next
   }
-  skip > 0 { skip--; next }
+
+  # Skip everything until (and including) NONCE_SALT, so comments/blank lines inside the block do not matter
+  skipping == 1 {
+    if ($0 ~ /define\(\s*\x27NONCE_SALT\x27/) { skipping=0 }
+    next
+  }
+
   { print }
 ' wp-config.php > wp-config.php.new
 
