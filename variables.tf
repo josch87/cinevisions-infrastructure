@@ -72,3 +72,8 @@ variable "cinevisions_web_server_instance_type" {
   type        = string
   default     = "t3.micro"
 }
+
+variable "my_local_public_ip" {
+  description = "My public IP address in CIDR notation (must be /32), e.g. 92.211.3.2/32 for SSH access to webserver"
+  type        = string
+}
