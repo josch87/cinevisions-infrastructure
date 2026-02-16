@@ -1,11 +1,11 @@
 variable "aws_profile" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "environment" {
   description = "Environment to deploy into"
-  type = string
+  type        = string
 
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
@@ -15,13 +15,13 @@ variable "environment" {
 
 variable "aws_region" {
   description = "AWS region to deploy into"
-  type = string
-  default = "us-west-2"
+  type        = string
+  default     = "us-west-2"
 }
 
 variable "aws_availability_zones" {
   description = "Availability zones by key"
-  type = map(string)
+  type        = map(string)
   default = {
     az1 = "us-west-2a",
     az2 = "us-west-2b",
@@ -39,36 +39,36 @@ variable "aws_availability_zones" {
 
 variable "cinevisions_vpc_cidr" {
   description = "CIDR block for the VPC"
-  type = string
-  default = "10.0.0.0/24"
+  type        = string
+  default     = "10.0.0.0/24"
 }
 
 variable "cinevisions_public_subnet_1_cidr" {
   description = "CIDR block for the public subnet 1"
-  type = string
-  default = "10.0.0.0/28"
+  type        = string
+  default     = "10.0.0.0/28"
 }
 
 variable "cinevisions_private_subnet_1_cidr" {
   description = "CIDR block for the private subnet 1"
-  type = string
-  default = "10.0.0.16/28"
+  type        = string
+  default     = "10.0.0.16/28"
 }
 
 variable "cinevisions_public_subnet_2_cidr" {
   description = "CIDR block for the public subnet 2"
-  type = string
-  default = "10.0.0.32/28"
+  type        = string
+  default     = "10.0.0.32/28"
 }
 
 variable "cinevisions_private_subnet_2_cidr" {
   description = "CIDR block for the private subnet 2"
-  type = string
-  default = "10.0.0.48/28"
+  type        = string
+  default     = "10.0.0.48/28"
 }
 
 variable "cinevisions_web_server_instance_type" {
   description = "Instance type for the web server"
-  type = string
-  default = "t3.micro"
+  type        = string
+  default     = "t3.micro"
 }
