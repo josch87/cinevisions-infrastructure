@@ -20,9 +20,9 @@ resource "aws_subnet" "cinevisions_public_subnet_1" {
 }
 
 resource "aws_subnet" "cinevisions_private_subnet_1" {
-  vpc_id                  = aws_vpc.cinevisions_vpc.id
-  cidr_block              = var.cinevisions_private_subnet_1_cidr
-  availability_zone       = var.aws_availability_zones["az1"]
+  vpc_id            = aws_vpc.cinevisions_vpc.id
+  cidr_block        = var.cinevisions_private_subnet_1_cidr
+  availability_zone = var.aws_availability_zones["az1"]
   tags = {
     Name        = "cinevisions-private-subnet-1"
     Environment = var.environment
@@ -41,9 +41,9 @@ resource "aws_subnet" "cinevisions_public_subnet_2" {
 }
 
 resource "aws_subnet" "cinevisions_private_subnet_2" {
-  vpc_id                  = aws_vpc.cinevisions_vpc.id
-  cidr_block              = var.cinevisions_private_subnet_2_cidr
-  availability_zone       = var.aws_availability_zones["az2"]
+  vpc_id            = aws_vpc.cinevisions_vpc.id
+  cidr_block        = var.cinevisions_private_subnet_2_cidr
+  availability_zone = var.aws_availability_zones["az2"]
   tags = {
     Name        = "cinevisions-private-subnet-2"
     Environment = var.environment
@@ -93,24 +93,28 @@ resource "aws_security_group" "webserver_sg" {
   description = "Security group for web server"
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name        = "webserver-sg"
     Environment = var.environment
   }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "webserver_sg_ingress_http" {
+  security_group_id = aws_security_group.webserver_sg.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 80
+  ip_protocol = "tcp"
+  to_port     = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "webserver_sg_egress_all" {
+  security_group_id = aws_security_group.webserver_sg.id
+
+  cidr_ipv4   = "0.0.0./0"
+  from_port   = 0
+  ip_protocol = "-1"
+  to_port     = 0
 }
 
 data "aws_ami" "amazon-linux_2023" {
