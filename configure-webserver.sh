@@ -49,6 +49,26 @@ sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
 sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
 sed -i "s/'localhost'/'$DBHost'/g" wp-config.php
 
+# Add hashed for salts
+SALTS_FILE="$(mktemp)"
+curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
+test -s "$SALTS_FILE"
+
+awk -v salts="$SALTS_FILE" '
+  BEGIN { inserted=0; skip=0 }
+  # Wenn die AUTH_KEY-Zeile kommt: Salts einfügen und die nächsten 7 define()-Zeilen überspringen
+  $0 ~ /define\(\s*\x27AUTH_KEY\x27/ {
+    if (!inserted) { system("cat " salts); inserted=1 }
+    skip=7
+    next
+  }
+  skip > 0 { skip--; next }
+  { print }
+' wp-config.php > wp-config.php.new
+
+mv wp-config.php.new wp-config.php
+rm -f "$SALTS_FILE"
+
 # Grant permissions
 usermod -a -G apache ec2-user
 chown -R ec2-user:apache /var/www/
