@@ -20,7 +20,7 @@ resource "aws_instance" "cinevisions_web_server" {
   key_name               = var.key_name
   iam_instance_profile   = var.iam_instance_profile_webserver
 
-  user_data = templatefile("configure-webserver.sh", {
+  user_data = templatefile("configure-webserver.sh.tftpl", {
     environment = var.environment
   })
 
