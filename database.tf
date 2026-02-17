@@ -14,12 +14,14 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "mariadb_rds" {
+  identifier                 = "cinevisions-mariadb-rds"
   allocated_storage          = 10
   db_name                    = "cinevisions"
   engine                     = "mariadb"
   engine_version             = "11.8"
   auto_minor_version_upgrade = true
   instance_class             = "db.t3.micro"
+  storage_type               = "gp2"
   username                   = "rds_master"
   password                   = data.aws_ssm_parameter.rds_master_password.value
   skip_final_snapshot        = true
