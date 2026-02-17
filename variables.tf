@@ -1,10 +1,11 @@
 variable "aws_profile" {
-  type    = string
-  default = null
+  description = "(Optional) AWS profile to use for deployment"
+  type        = string
+  default     = null
 }
 
 variable "environment" {
-  description = "Environment to deploy into"
+  description = "(Required) Environment to deploy into"
   type        = string
 
   validation {
@@ -14,13 +15,13 @@ variable "environment" {
 }
 
 variable "aws_region" {
-  description = "AWS region to deploy into"
+  description = "(Optional) AWS region to deploy into"
   type        = string
   default     = "us-west-2"
 }
 
 variable "aws_availability_zones" {
-  description = "Availability zones by key"
+  description = "(Optional) Availability zones by key"
   type        = map(string)
   default = {
     az1 = "us-west-2a",
@@ -38,48 +39,48 @@ variable "aws_availability_zones" {
 }
 
 variable "cinevisions_vpc_cidr" {
-  description = "CIDR block for the VPC"
+  description = "(Optional) CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/24"
 }
 
 variable "cinevisions_public_subnet_1_cidr" {
-  description = "CIDR block for the public subnet 1"
+  description = "(Optional) CIDR block for the public subnet 1"
   type        = string
   default     = "10.0.0.0/28"
 }
 
 variable "cinevisions_private_subnet_1_cidr" {
-  description = "CIDR block for the private subnet 1"
+  description = "(Optional) CIDR block for the private subnet 1"
   type        = string
   default     = "10.0.0.16/28"
 }
 
 variable "cinevisions_public_subnet_2_cidr" {
-  description = "CIDR block for the public subnet 2"
+  description = "(Optional) CIDR block for the public subnet 2"
   type        = string
   default     = "10.0.0.32/28"
 }
 
 variable "cinevisions_private_subnet_2_cidr" {
-  description = "CIDR block for the private subnet 2"
+  description = "(Optional) CIDR block for the private subnet 2"
   type        = string
   default     = "10.0.0.48/28"
 }
 
 variable "cinevisions_web_server_instance_type" {
-  description = "Instance type for the web server"
+  description = "(Optional) Instance type for the web server"
   type        = string
   default     = "t3.micro"
 }
 
 variable "my_local_public_ip" {
-  description = "My public IP address in CIDR notation (must be /32), e.g. 92.211.3.2/32 for SSH access to webserver"
+  description = "(Required) My public IP address in CIDR notation (must be /32), e.g. 92.211.3.2/32 for SSH access to webserver"
   type        = string
 }
 
 variable "key_name" {
-  description = "Name of the SSH key pair to use for the web server"
+  description = "(Required) Name of the SSH key pair to use for the web server"
   type        = string
 }
 
