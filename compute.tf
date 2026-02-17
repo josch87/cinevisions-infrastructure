@@ -17,9 +17,9 @@ resource "aws_instance" "cinevisions_web_server" {
   instance_type          = var.cinevisions_web_server_instance_type
   subnet_id              = aws_subnet.cinevisions_public_subnet_1.id
   vpc_security_group_ids = [aws_security_group.webserver_sg.id, aws_security_group.ssh_sg.id]
-  key_name               = "vockey"
+  key_name               = var.key_name
   user_data              = file("configure-webserver.sh")
-  iam_instance_profile   = "LabInstanceProfile"
+  iam_instance_profile   = var.iam_instance_profile_webserver
 
   tags = {
     Name        = "cinevisions-web-server"

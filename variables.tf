@@ -77,3 +77,13 @@ variable "my_local_public_ip" {
   description = "My public IP address in CIDR notation (must be /32), e.g. 92.211.3.2/32 for SSH access to webserver"
   type        = string
 }
+
+variable "key_name" {
+  description = "Name of the SSH key pair to use for the web server"
+  type        = string
+}
+
+variable "iam_instance_profile_webserver" {
+  description = "IAM instance profile for the webserver"
+  type        = string
+}
