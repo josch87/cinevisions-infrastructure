@@ -18,8 +18,11 @@ resource "aws_instance" "cinevisions_web_server" {
   subnet_id              = aws_subnet.cinevisions_public_subnet_1.id
   vpc_security_group_ids = [aws_security_group.webserver_sg.id, aws_security_group.ssh_sg.id]
   key_name               = var.key_name
-  user_data              = file("configure-webserver.sh")
   iam_instance_profile   = var.iam_instance_profile_webserver
+
+  user_data = templatefile("configure-webserver.sh", {
+    environment = var.environment
+  })
 
   tags = {
     Name        = "cinevisions-web-server"

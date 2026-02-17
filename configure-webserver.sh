@@ -3,8 +3,8 @@
 # Set Variables
 DBName="cinevisions"
 DBUser="wordpress"
-DBPassword=$(aws ssm get-parameters --names "/cinevisions/wordpress/db_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/wordpress/db_root_password" --query="Parameters[0].Value" --with-decryption --output text)
+DBPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
+DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
 DBHost="localhost"
 WebRoot="/var/www/html"
 
