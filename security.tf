@@ -36,7 +36,7 @@ resource "aws_security_group" "ssh_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ssh_sg_ingress_http" {
+resource "aws_vpc_security_group_ingress_rule" "ssh_sg_ingress_ssh" {
   security_group_id = aws_security_group.ssh_sg.id
 
   cidr_ipv4   = var.my_local_public_ip
