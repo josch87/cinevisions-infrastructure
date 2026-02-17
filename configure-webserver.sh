@@ -29,10 +29,10 @@ sleep 10
 mysqladmin -u root password "$DBRootPassword"
 
 # Create WordPress database
-echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -u root --password=$DBRootPassword
-echo "CREATE USER IF NOT EXISTS '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" | mysql -u root --password=$DBRootPassword
-echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" | mysql -u root --password=$DBRootPassword
-echo "FLUSH PRIVILEGES;" | mysql -u root --password=$DBRootPassword
+echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -u root --password="$DBRootPassword"
+echo "CREATE USER IF NOT EXISTS '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" | mysql -u root --password="$DBRootPassword"
+echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" | mysql -u root --password="$DBRootPassword"
+echo "FLUSH PRIVILEGES;" | mysql -u root --password="$DBRootPassword"
 
 # Download and install WordPress
 wget https://wordpress.org/latest.tar.gz -P $WebRoot
