@@ -47,19 +47,26 @@ rm -R wordpress/ latest.tar.gz
 
 # Create wp-config.php (one folder above WebRoot)
 sed \
-  -e "s|database_name_here|$DB_NAME|" \
-  -e "s|username_here|$DB_USER|" \
-  -e "s|password_here|$DB_PASSWORD|" \
-  -e "s|localhost|$DB_HOST|" \
+  -e "s|database_name_here|$DBName|" \
+  -e "s|username_here|$DBUser|" \
+  -e "s|password_here|$DBPassword|" \
+  -e "s|localhost|$DBHost|" \
   wp-config-sample.php > ../wp-config.php
 cd ../
+
+# Normalize line endings to Unix (remove CR from CRLF) to avoid ^M issues on Linux
+sed -i 's/\r$//' wp-config.php
+
+sed -i "/Add any custom values between this line/a \
+define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);" wp-config.php
+
 
 # Fetch and inject WordPress secret keys/salts into wp-config.php
 SALTS_FILE="$(mktemp)"
 curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
 test -s "$SALTS_FILE"
 
-awk -v ORS='\r\n' salts="$SALTS_FILE" '
+awk -v salts="$SALTS_FILE" '
   BEGIN { inserted=0; skipping=0 }
 
   # Start: when AUTH_KEY is found, output the new salts and start skipping the old block
