@@ -59,7 +59,7 @@ SALTS_FILE="$(mktemp)"
 curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
 test -s "$SALTS_FILE"
 
-awk -v salts="$SALTS_FILE" '
+awk -v ORS='\r\n' salts="$SALTS_FILE" '
   BEGIN { inserted=0; skipping=0 }
 
   # Start: when AUTH_KEY is found, output the new salts and start skipping the old block
