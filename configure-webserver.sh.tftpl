@@ -29,9 +29,6 @@ systemctl start httpd
 # Install MariaDB Client 10.11
 dnf install -y mariadb1011.x86_64
 
-# Set MariaDB root password
-# mysqladmin -u root password "$DBRootPassword"
-
 # Create WordPress database
 echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
 echo "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
