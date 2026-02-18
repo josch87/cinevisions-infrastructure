@@ -51,3 +51,30 @@ resource "aws_vpc_security_group_egress_rule" "ssh_sg_egress_all" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
+
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-sg"
+  description = "Allow traffic to RDS"
+  vpc_id      = aws_vpc.cinevisions_vpc.id
+
+  tags = {
+    Name        = "rds-sg"
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "rds_sg_ingress_ssh" {
+  security_group_id = aws_security_group.rds_sg.id
+
+  referenced_security_group_id = aws_security_group.webserver_sg.id
+  from_port                    = 3306
+  ip_protocol                  = "tcp"
+  to_port                      = 3306
+}
+
+resource "aws_vpc_security_group_egress_rule" "rds_sg_egress_all" {
+  security_group_id = aws_security_group.rds_sg.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+}

@@ -22,7 +22,10 @@ resource "aws_instance" "cinevisions_web_server" {
 
   user_data = templatefile("configure-webserver.sh.tftpl", {
     environment = var.environment
+    rds_host    = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
+    db_username = aws_db_instance.mariadb_rds.username
   })
+  user_data_replace_on_change = true
 
   tags = {
     Name        = "cinevisions-web-server"

@@ -27,6 +27,7 @@ resource "aws_db_instance" "mariadb_rds" {
   skip_final_snapshot        = true
   multi_az                   = true
   db_subnet_group_name       = aws_db_subnet_group.rds_subnet_group.name
+  vpc_security_group_ids     = [aws_security_group.rds_sg.id]
 
   tags = {
     Name        = "Cinevisions MariaDB-RDS Instance"

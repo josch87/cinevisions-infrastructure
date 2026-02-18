@@ -3,9 +3,16 @@
 # Set Variables
 DBName="cinevisions"
 DBUser="wordpress"
+# shellcheck disable=SC2154
+# 'db_username' provided by Terraform templatefile()
+DBRootUser="${db_username}"
+# shellcheck disable=SC2154
+# 'environment' provided by Terraform templatefile()
 DBPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
 DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBHost="localhost"
+# shellcheck disable=SC2154
+# 'rds_host' provided by Terraform templatefile()
+DBHost="${rds_host}"
 WebRoot="/var/www/html"
 
 # Install PHP and other tools
@@ -19,20 +26,17 @@ dnf install -y httpd
 systemctl enable httpd
 systemctl start httpd
 
-# Install MariaDB 10.11
-dnf install -y mariadb1011-server.x86_64
-systemctl enable mariadb
-systemctl start mariadb
-sleep 10
+# Install MariaDB Client 10.11
+dnf install -y mariadb1011.x86_64
 
 # Set MariaDB root password
-mysqladmin -u root password "$DBRootPassword"
+# mysqladmin -u root password "$DBRootPassword"
 
 # Create WordPress database
-echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -u root --password="$DBRootPassword"
-echo "CREATE USER IF NOT EXISTS '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" | mysql -u root --password="$DBRootPassword"
-echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" | mysql -u root --password="$DBRootPassword"
-echo "FLUSH PRIVILEGES;" | mysql -u root --password="$DBRootPassword"
+echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
+echo "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
+echo "GRANT ALL ON $DBName.* TO '$DBUser'@'%';" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
+echo "FLUSH PRIVILEGES;" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
 
 # Download and install WordPress
 wget https://wordpress.org/latest.tar.gz -P $WebRoot
