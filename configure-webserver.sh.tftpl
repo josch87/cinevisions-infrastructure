@@ -46,12 +46,13 @@ cp -rvf wordpress/* .
 rm -R wordpress/ latest.tar.gz
 
 # Create wp-config.php (one folder above WebRoot)
-cp ./wp-config-sample.php ../wp-config.php
+sed \
+  -e "s|database_name_here|$DB_NAME|" \
+  -e "s|username_here|$DB_USER|" \
+  -e "s|password_here|$DB_PASSWORD|" \
+  -e "s|localhost|$DB_HOST|" \
+  wp-config-sample.php > ../wp-config.php
 cd ../
-sed -i "s/'database_name_here'/'$DBName'/g" wp-config.php
-sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
-sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
-sed -i "s/'localhost'/'$DBHost'/g" wp-config.php
 
 # Fetch and inject WordPress secret keys/salts into wp-config.php
 SALTS_FILE="$(mktemp)"
