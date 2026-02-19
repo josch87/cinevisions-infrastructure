@@ -30,10 +30,18 @@ systemctl start httpd
 dnf install -y mariadb1011.x86_64
 
 # Create WordPress database
-echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
-echo "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
-echo "GRANT ALL ON $DBName.* TO '$DBUser'@'%';" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
-echo "FLUSH PRIVILEGES;" | mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword"
+# shellcheck disable=SC2034
+MYSQL_CMD=(mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword")
+
+exec_sql() {
+  # shellcheck disable=SC2288
+  echo "$1" | "$${MYSQL_CMD[@]}"
+}
+
+exec_sql "CREATE DATABASE IF NOT EXISTS \`$DBName\`;"
+exec_sql "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';"
+exec_sql "GRANT ALL ON \`$DBName\`.* TO '$DBUser'@'%';"
+exec_sql "FLUSH PRIVILEGES;"
 
 # Download and install WordPress
 wget https://wordpress.org/latest.tar.gz -P $WebRoot
