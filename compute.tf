@@ -25,7 +25,7 @@ resource "aws_instance" "cinevisions_web_server" {
     rds_host    = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
     db_username = aws_db_instance.mariadb_rds.username
   })
-  user_data_replace_on_change = true
+  user_data_replace_on_change = var.environment == "dev"
 
   tags = {
     Name        = "cinevisions-web-server"
