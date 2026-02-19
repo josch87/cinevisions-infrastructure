@@ -31,11 +31,11 @@ dnf install -y mariadb1011.x86_64
 
 # Create WordPress database
 # shellcheck disable=SC2034
-MYSQL_CMD=(mysql -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword")
+MARIADB_CMD=(mariadb -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword")
 
 exec_sql() {
   # shellcheck disable=SC2288
-  echo "$1" | "$${MYSQL_CMD[@]}"
+  echo "$1" | "$${MARIADB_CMD[@]}"
 }
 
 exec_sql "CREATE DATABASE IF NOT EXISTS \`$DBName\`;"
