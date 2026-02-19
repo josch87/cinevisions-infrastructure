@@ -78,7 +78,7 @@ The infrastructure includes:
 
 ## Architecture
 
-![Architecture Diagram](diagram/architecture-diagram.png)
+![Architecture Diagram](diagram/architecture-diagram_level2.png)
 
 - **Network**: Multi-AZ VPC with public and private subnets
 - **Compute**: Single EC2 instance in public subnet with automated configuration
