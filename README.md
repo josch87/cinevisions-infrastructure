@@ -6,8 +6,9 @@ This Terraform project provisions AWS infrastructure for a WordPress-based web a
 
 The infrastructure includes:
 - VPC with public and private subnets across two availability zones
-- EC2 instance running WordPress on Apache with MariaDB
-- Security groups for HTTP and SSH access
+- EC2 instance running WordPress on Apache
+- RDS MariaDB instance in private subnets (Multi-AZ)
+- Security groups for HTTP, SSH, and Database access
 - Automated WordPress installation and configuration via user data script
 
 ## Prerequisites
@@ -28,10 +29,10 @@ The infrastructure includes:
 
 2. **Create Required SSM Parameters**
 
-   Before deployment, create these AWS Systems Manager Parameter Store values:
+   Before deployment, create these AWS Systems Manager Parameter Store values (replace `dev` with your environment if needed):
    ```bash
-   aws ssm put-parameter --name "/cinevisions/wordpress/db_password" --value "your-db-password" --type "SecureString"
-   aws ssm put-parameter --name "/cinevisions/wordpress/db_root_password" --value "your-root-password" --type "SecureString"
+   aws ssm put-parameter --name "/cinevisions/dev/db/master_password" --value "your-db-root-password" --type "SecureString"
+   aws ssm put-parameter --name "/cinevisions/dev/db/wp_password" --value "your-wordpress-db-password" --type "SecureString"
    ```
 
 3. **Configure Variables**
@@ -72,6 +73,7 @@ The infrastructure includes:
    After deployment completes, Terraform will output:
    - `webserver_public_ip`: Public IP address of the web server
    - `webserver_public_dns`: Public DNS name of the web server
+   - `rds_endpoint`: Endpoint of the MariaDB RDS instance
    - `vpc_id`: ID of the created VPC
 
    Navigate to `http://<webserver_public_ip>` to complete WordPress setup.
@@ -82,7 +84,7 @@ The infrastructure includes:
 
 - **Network**: Multi-AZ VPC with public and private subnets
 - **Compute**: Single EC2 instance in public subnet with automated configuration
-- **Database**: MariaDB 10.11 running locally on the web server
+- **Database**: Managed MariaDB 11.8 RDS instance in private subnets (Multi-AZ)
 - **Web Server**: Apache HTTP Server with PHP 8.5
 - **CMS**: WordPress (latest version)
 
@@ -90,6 +92,7 @@ The infrastructure includes:
 
 - SSH access restricted to `my_local_public_ip`
 - HTTP (port 80) open to the internet
+- RDS database access restricted to the web server security group
 - Database credentials stored in AWS Systems Manager Parameter Store
 - WordPress config file permissions set to 440
 
@@ -105,7 +108,8 @@ terraform destroy
 - `providers.tf`: AWS provider configuration
 - `variables.tf`: Input variable definitions
 - `network.tf`: VPC, subnets, and networking resources
-- `security.tf`: Security groups
+- `security.tf`: Security groups (Web, SSH, RDS)
 - `compute.tf`: EC2 instances and related resources
+- `database.tf`: RDS instance and subnet group
 - `outputs.tf`: Output definitions
 - `configure-webserver.sh`: User data script for WordPress installation
