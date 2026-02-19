@@ -63,7 +63,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "rds_sg_ingress_ssh" {
+resource "aws_vpc_security_group_ingress_rule" "rds_sg_ingress_mariadb" {
   security_group_id = aws_security_group.rds_sg.id
 
   referenced_security_group_id = aws_security_group.webserver_sg.id
