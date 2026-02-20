@@ -12,3 +12,8 @@ output "vpc_id" {
   description = "The ID of the VPC"
   value       = aws_vpc.cinevisions_vpc.id
 }
+
+output "rds_endpoint" {
+  description = "The endpoint of the RDS instance"
+  value       = aws_db_instance.mariadb_rds.endpoint
+}

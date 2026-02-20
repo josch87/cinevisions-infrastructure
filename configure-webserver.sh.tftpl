@@ -3,9 +3,16 @@
 # Set Variables
 DBName="cinevisions"
 DBUser="wordpress"
-DBPassword=$(aws ssm get-parameters --names "/cinevisions/wordpress/db_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/wordpress/db_root_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBHost="localhost"
+# shellcheck disable=SC2154
+# 'db_username' provided by Terraform templatefile()
+DBRootUser="${db_username}"
+# shellcheck disable=SC2154
+# 'environment' provided by Terraform templatefile()
+DBPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
+DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
+# shellcheck disable=SC2154
+# 'rds_host' provided by Terraform templatefile()
+DBHost="${rds_host}"
 WebRoot="/var/www/html"
 
 # Install PHP and other tools
@@ -19,20 +26,22 @@ dnf install -y httpd
 systemctl enable httpd
 systemctl start httpd
 
-# Install MariaDB 10.11
-dnf install -y mariadb1011-server.x86_64
-systemctl enable mariadb
-systemctl start mariadb
-sleep 10
-
-# Set MariaDB root password
-mysqladmin -u root password "$DBRootPassword"
+# Install MariaDB Client 10.11
+dnf install -y mariadb1011.x86_64
 
 # Create WordPress database
-echo "CREATE DATABASE IF NOT EXISTS $DBName;" | mysql -u root --password="$DBRootPassword"
-echo "CREATE USER IF NOT EXISTS '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" | mysql -u root --password="$DBRootPassword"
-echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" | mysql -u root --password="$DBRootPassword"
-echo "FLUSH PRIVILEGES;" | mysql -u root --password="$DBRootPassword"
+# shellcheck disable=SC2034
+MARIADB_CMD=(mariadb -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword")
+
+exec_sql() {
+  # shellcheck disable=SC2288
+  echo "$1" | "$${MARIADB_CMD[@]}"
+}
+
+exec_sql "CREATE DATABASE IF NOT EXISTS \`$DBName\`;"
+exec_sql "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';"
+exec_sql "GRANT ALL ON \`$DBName\`.* TO '$DBUser'@'%';"
+exec_sql "FLUSH PRIVILEGES;"
 
 # Download and install WordPress
 wget https://wordpress.org/latest.tar.gz -P $WebRoot
@@ -42,12 +51,20 @@ cp -rvf wordpress/* .
 rm -R wordpress/ latest.tar.gz
 
 # Create wp-config.php (one folder above WebRoot)
-cp ./wp-config-sample.php ../wp-config.php
+sed \
+  -e "s|database_name_here|$DBName|" \
+  -e "s|username_here|$DBUser|" \
+  -e "s|password_here|$DBPassword|" \
+  -e "s|localhost|$DBHost|" \
+  wp-config-sample.php > ../wp-config.php
 cd ../
-sed -i "s/'database_name_here'/'$DBName'/g" wp-config.php
-sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
-sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
-sed -i "s/'localhost'/'$DBHost'/g" wp-config.php
+
+# Normalize line endings to Unix (remove CR from CRLF) to avoid ^M issues on Linux
+sed -i 's/\r$//' wp-config.php
+
+sed -i "/Add any custom values between this line/a \
+define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);" wp-config.php
+
 
 # Fetch and inject WordPress secret keys/salts into wp-config.php
 SALTS_FILE="$(mktemp)"

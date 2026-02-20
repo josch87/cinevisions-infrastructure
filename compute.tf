@@ -12,14 +12,25 @@ data "aws_ami" "amazon-linux_2023" {
   }
 }
 
+data "aws_iam_instance_profile" "webserver" {
+  name = var.iam_instance_profile_webserver
+}
+
 resource "aws_instance" "cinevisions_web_server" {
   ami                    = data.aws_ami.amazon-linux_2023.id
   instance_type          = var.cinevisions_web_server_instance_type
   subnet_id              = aws_subnet.cinevisions_public_subnet_1.id
   vpc_security_group_ids = [aws_security_group.webserver_sg.id, aws_security_group.ssh_sg.id]
   key_name               = var.key_name
-  user_data              = file("configure-webserver.sh")
-  iam_instance_profile   = var.iam_instance_profile_webserver
+  iam_instance_profile   = data.aws_iam_instance_profile.webserver.name
+  depends_on             = [aws_db_instance.mariadb_rds]
+
+  user_data = templatefile("configure-webserver.sh.tftpl", {
+    environment = var.environment
+    rds_host    = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
+    db_username = aws_db_instance.mariadb_rds.username
+  })
+  user_data_replace_on_change = var.environment == "dev"
 
   tags = {
     Name        = "cinevisions-web-server"
