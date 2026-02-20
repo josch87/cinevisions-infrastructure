@@ -14,38 +14,38 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "mariadb_rds" {
-  identifier                      = "${local.name_prefix}-mariadb-rds"
+  identifier = "${local.name_prefix}-mariadb-rds"
 
   # Engine configuration
-  engine                          = "mariadb"
-  engine_version                  = "11.8"
-  auto_minor_version_upgrade      = true
-  instance_class                  = "db.t3.micro"
+  engine                     = "mariadb"
+  engine_version             = "11.8"
+  auto_minor_version_upgrade = true
+  instance_class             = "db.t3.micro"
 
   # Storage configuration
-  allocated_storage               = 10
-  storage_type                    = "gp2"
-  storage_encrypted               = true
+  allocated_storage = 10
+  storage_type      = "gp2"
+  storage_encrypted = true
 
   # Database configuration
-  db_name                         = "cinevisions"
-  username                        = "rds_master"
-  password                        = data.aws_ssm_parameter.rds_master_password.value
+  db_name  = "cinevisions"
+  username = "rds_master"
+  password = data.aws_ssm_parameter.rds_master_password.value
 
   # Network configuration
-  db_subnet_group_name            = aws_db_subnet_group.rds_subnet_group.name
-  vpc_security_group_ids          = [aws_security_group.rds_sg.id]
-  publicly_accessible             = false
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  publicly_accessible    = false
 
   # Deletion protection
-  skip_final_snapshot             = var.environment != "prod"
+  skip_final_snapshot = var.environment != "prod"
 
   # High availability
-  multi_az                        = true
+  multi_az = true
 
   # Backup configuration
-  backup_retention_period         = var.environment == "prod" ? 10 : 1
-  backup_window                   = "03:00-04:00"
+  backup_retention_period = var.environment == "prod" ? 10 : 1
+  backup_window           = "03:00-04:00"
 
   # Monitoring
   enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
