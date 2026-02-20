@@ -14,7 +14,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 }
 
 resource "aws_db_instance" "mariadb_rds" {
-  identifier                 = "cinevisions-mariadb-rds"
+  identifier                 = "${local.name_prefix}-mariadb-rds"
   allocated_storage          = 10
   db_name                    = "cinevisions"
   engine                     = "mariadb"
