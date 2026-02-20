@@ -30,7 +30,7 @@ resource "aws_db_instance" "mariadb_rds" {
   db_subnet_group_name       = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids     = [aws_security_group.rds_sg.id]
   publicly_accessible        = false
-  backup_retention_period    = "prod" ? 10 : 1
+  backup_retention_period    = var.environment == "prod" ? 10 : 1
   backup_window              = "03:00-04:00"
 
   tags = {
