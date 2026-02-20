@@ -4,8 +4,7 @@ resource "aws_security_group" "webserver_sg" {
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name        = "webserver-sg"
-    Environment = var.environment
+    Name = "webserver-sg"
   }
 }
 
@@ -31,8 +30,7 @@ resource "aws_security_group" "ssh_sg" {
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name        = "ssh-sg"
-    Environment = var.environment
+    Name = "ssh-sg"
   }
 }
 
@@ -58,8 +56,7 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name        = "rds-sg"
-    Environment = var.environment
+    Name = "rds-sg"
   }
 }
 

@@ -8,8 +8,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   subnet_ids = [aws_subnet.cinevisions_private_subnet_1.id, aws_subnet.cinevisions_private_subnet_2.id]
 
   tags = {
-    Name        = "RDS Subnet Group"
-    Environment = var.environment
+    Name = "RDS Subnet Group"
   }
 }
 
@@ -54,7 +53,6 @@ resource "aws_db_instance" "mariadb_rds" {
   enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
 
   tags = {
-    Name        = "${local.name_prefix}-MariaDB-RDS"
-    Environment = var.environment
+    Name = "${local.name_prefix}-MariaDB-RDS"
   }
 }
