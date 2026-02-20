@@ -85,6 +85,6 @@ variable "key_name" {
 }
 
 variable "iam_instance_profile_webserver" {
-  description = "IAM instance profile for the webserver"
+  description = "Name of an existing IAM instance profile to attach to the web server EC2 instance (expects the instance profile name, e.g. \"LabInstanceProfile\", not a role name or ARN). In the sandbox this must be provided because Terraform cannot create IAM roles/profiles."
   type        = string
 }
