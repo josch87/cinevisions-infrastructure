@@ -38,7 +38,7 @@ resource "aws_db_instance" "mariadb_rds" {
   publicly_accessible    = false
 
   # Deletion protection
-  deletion_protection = var.environment == "prod"
+  deletion_protection       = var.environment == "prod"
   skip_final_snapshot       = var.environment != "prod"
   final_snapshot_identifier = "${local.name_prefix}-mariadb-final-${formatdate("YYYYMMDDhhmm", timestamp())}"
 
