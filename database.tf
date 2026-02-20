@@ -4,7 +4,7 @@ data "aws_ssm_parameter" "rds_master_password" {
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "rds_subnet_group"
+  name       = "${local.name_prefix}-rds-subnet-group"
   subnet_ids = [aws_subnet.cinevisions_private_subnet_1.id, aws_subnet.cinevisions_private_subnet_2.id]
 
   tags = {
