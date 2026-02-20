@@ -24,7 +24,7 @@ resource "aws_db_instance" "mariadb_rds" {
   storage_type               = "gp2"
   username                   = "rds_master"
   password                   = data.aws_ssm_parameter.rds_master_password.value
-  skip_final_snapshot        = true
+  skip_final_snapshot        = var.environment != "prod"
   multi_az                   = true
   db_subnet_group_name       = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids     = [aws_security_group.rds_sg.id]
