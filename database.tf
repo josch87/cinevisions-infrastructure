@@ -54,7 +54,7 @@ resource "aws_db_instance" "mariadb_rds" {
   enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
 
   tags = {
-    Name        = "Cinevisions MariaDB-RDS Instance"
+    Name        = "${local.name_prefix}-MariaDB-RDS"
     Environment = var.environment
   }
 }
