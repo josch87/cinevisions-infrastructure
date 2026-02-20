@@ -39,9 +39,11 @@ The infrastructure includes:
 
    Create a `terraform.tfvars` file with required variables:
    ```hcl
-   aws_profile        = "sandbox"  # only if using a non-default AWS profile
-   environment        = "dev"      # or "staging", "prod"
-   my_local_public_ip = "YOUR.IP.ADDRESS/32"
+   aws_profile                    = "sandbox"  # only if using a non-default AWS profile
+   environment                    = "dev"      # or "staging", "prod"
+   my_local_public_ip             = "YOUR.IP.ADDRESS/32"
+   iam_instance_profile_webserver = "LabInstanceProfile"
+   key_name                       = "vockey"
    ```
 
    Optional variables (with defaults):
