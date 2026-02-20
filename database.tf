@@ -38,7 +38,8 @@ resource "aws_db_instance" "mariadb_rds" {
   publicly_accessible    = false
 
   # Deletion protection
-  skip_final_snapshot = var.environment != "prod"
+  skip_final_snapshot       = var.environment != "prod"
+  final_snapshot_identifier = "${local.name_prefix}-mariadb-final-${formatdate("YYYYMMDDhhmm", timestamp())}"
 
   # High availability
   multi_az = true
@@ -46,6 +47,7 @@ resource "aws_db_instance" "mariadb_rds" {
   # Backup configuration
   backup_retention_period = var.environment == "prod" ? 10 : 1
   backup_window           = "03:00-04:00"
+  maintenance_window      = "Sun:04:00-Sun:05:00"
 
   # Monitoring
   enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
