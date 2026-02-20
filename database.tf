@@ -40,7 +40,7 @@ resource "aws_db_instance" "mariadb_rds" {
   # Deletion protection
   deletion_protection       = var.environment == "prod"
   skip_final_snapshot       = var.environment != "prod"
-  final_snapshot_identifier = "${local.name_prefix}-mariadb-final-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  final_snapshot_identifier = var.environment == "prod" ? "${local.name_prefix}-mariadb-final-${random_id.final_snapshot_suffix.hex}" : null
 
   # High availability
   multi_az = true
