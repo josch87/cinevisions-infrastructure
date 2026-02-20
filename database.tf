@@ -22,6 +22,7 @@ resource "aws_db_instance" "mariadb_rds" {
   auto_minor_version_upgrade = true
   instance_class             = "db.t3.micro"
   storage_type               = "gp2"
+  storage_encrypted          = true
   username                   = "rds_master"
   password                   = data.aws_ssm_parameter.rds_master_password.value
   skip_final_snapshot        = var.environment != "prod"
