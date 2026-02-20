@@ -114,4 +114,4 @@ terraform destroy
 - `compute.tf`: EC2 instances and related resources
 - `database.tf`: RDS instance and subnet group
 - `outputs.tf`: Output definitions
-- `configure-webserver.sh`: User data script for WordPress installation
+- `configure-webserver.sh.tftpl`: User data script for WordPress installation
