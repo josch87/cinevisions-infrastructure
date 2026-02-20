@@ -33,8 +33,6 @@ resource "aws_db_instance" "mariadb_rds" {
   backup_retention_period               = var.environment == "prod" ? 10 : 1
   backup_window                         = "03:00-04:00"
   enabled_cloudwatch_logs_exports       = ["error", "general", "slowquery"]
-  performance_insights_enabled          = true
-  performance_insights_retention_period = 7
 
   tags = {
     Name        = "Cinevisions MariaDB-RDS Instance"
