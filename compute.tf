@@ -33,6 +33,6 @@ resource "aws_instance" "cinevisions_web_server" {
   user_data_replace_on_change = var.environment == "dev"
 
   tags = {
-    Name = "cinevisions-web-server"
+    Name = "${local.name_prefix}-webserver"
   }
 }

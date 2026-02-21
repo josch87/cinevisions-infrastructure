@@ -1,10 +1,10 @@
 resource "aws_security_group" "webserver_sg" {
-  name        = "webserver-sg"
+  name        = "${local.name_prefix}-webserver-sg"
   description = "Security group for web server"
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name = "webserver-sg"
+    Name = "${local.name_prefix}-webserver-sg"
   }
 }
 
@@ -25,12 +25,12 @@ resource "aws_vpc_security_group_egress_rule" "webserver_sg_egress_all" {
 }
 
 resource "aws_security_group" "ssh_sg" {
-  name        = "ssh-sg"
+  name        = "${local.name_prefix}-ssh-sg"
   description = "SSH security group for developer access"
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name = "ssh-sg"
+    Name = "${local.name_prefix}-ssh-sg"
   }
 }
 
@@ -51,12 +51,12 @@ resource "aws_vpc_security_group_egress_rule" "ssh_sg_egress_all" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  name        = "rds-sg"
+  name        = "${local.name_prefix}-rds-sg"
   description = "Allow traffic to RDS"
   vpc_id      = aws_vpc.cinevisions_vpc.id
 
   tags = {
-    Name = "rds-sg"
+    Name = "${local.name_prefix}-rds-sg"
   }
 }
 
