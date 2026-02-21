@@ -23,7 +23,7 @@ resource "aws_instance" "cinevisions_web_server" {
   vpc_security_group_ids = [aws_security_group.webserver_sg.id, aws_security_group.ssh_sg.id]
   key_name               = var.key_name
   iam_instance_profile   = data.aws_iam_instance_profile.webserver.name
-  depends_on             = [aws_db_instance.mariadb_rds]
+  depends_on             = [aws_db_instance.mariadb_rds, data.aws_ssm_parameter.wp_password]
 
   user_data = templatefile("configure-webserver.sh.tftpl", {
     environment = var.environment

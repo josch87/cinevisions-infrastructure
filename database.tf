@@ -3,6 +3,11 @@ data "aws_ssm_parameter" "rds_master_password" {
   with_decryption = true
 }
 
+data "aws_ssm_parameter" "wp_password" {
+  name            = "/cinevisions/${var.environment}/db/wp_password"
+  with_decryption = false  # Value not needed in state, only existence check
+}
+
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "${local.name_prefix}-rds-subnet-group"
   subnet_ids = [aws_subnet.cinevisions_private_subnet_1.id, aws_subnet.cinevisions_private_subnet_2.id]
