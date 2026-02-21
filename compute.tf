@@ -26,9 +26,10 @@ resource "aws_instance" "cinevisions_web_server" {
   depends_on             = [aws_db_instance.mariadb_rds, data.aws_ssm_parameter.wp_password]
 
   user_data = templatefile("configure-webserver.sh.tftpl", {
-    environment = var.environment
-    rds_host    = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
-    db_username = aws_db_instance.mariadb_rds.username
+    project_name = var.project_name
+    environment  = var.environment
+    rds_host     = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
+    db_username  = aws_db_instance.mariadb_rds.username
   })
   user_data_replace_on_change = var.environment == "dev"
 
