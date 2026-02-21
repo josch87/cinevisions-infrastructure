@@ -8,16 +8,16 @@ data "aws_ssm_parameter" "wp_password" {
   with_decryption = false # Value not needed in state, only existence check
 }
 
-resource "aws_db_subnet_group" "rds_subnet_group" {
+resource "aws_db_subnet_group" "database" {
   name       = "${local.name_prefix}-rds-subnet-group"
-  subnet_ids = [aws_subnet.cinevisions_private_subnet_1.id, aws_subnet.cinevisions_private_subnet_2.id]
+  subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 
   tags = {
     Name = "${local.name_prefix}-rds-subnet-group"
   }
 }
 
-resource "aws_db_instance" "mariadb_rds" {
+resource "aws_db_instance" "mariadb" {
   identifier = "${local.name_prefix}-mariadb-rds"
 
   # Engine configuration
@@ -37,8 +37,8 @@ resource "aws_db_instance" "mariadb_rds" {
   password = data.aws_ssm_parameter.rds_master_password.value
 
   # Network configuration
-  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.database.name
+  vpc_security_group_ids = [aws_security_group.rds.id]
   publicly_accessible    = false
 
   # Deletion protection

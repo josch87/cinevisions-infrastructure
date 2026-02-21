@@ -16,20 +16,20 @@ data "aws_iam_instance_profile" "webserver" {
   name = var.iam_instance_profile_webserver
 }
 
-resource "aws_instance" "cinevisions_web_server" {
+resource "aws_instance" "webserver" {
   ami                    = data.aws_ami.amazon-linux_2023.id
-  instance_type          = var.cinevisions_web_server_instance_type
-  subnet_id              = aws_subnet.cinevisions_public_subnet_1.id
-  vpc_security_group_ids = [aws_security_group.webserver_sg.id, aws_security_group.ssh_sg.id]
+  instance_type          = var.webserver_instance_type
+  subnet_id              = aws_subnet.public_1.id
+  vpc_security_group_ids = [aws_security_group.webserver.id, aws_security_group.ssh.id]
   key_name               = var.key_name
   iam_instance_profile   = data.aws_iam_instance_profile.webserver.name
-  depends_on             = [aws_db_instance.mariadb_rds, data.aws_ssm_parameter.wp_password]
+  depends_on             = [aws_db_instance.mariadb, data.aws_ssm_parameter.wp_password]
 
   user_data = templatefile("configure-webserver.sh.tftpl", {
     project_name = var.project_name
     environment  = var.environment
-    rds_host     = split(":", aws_db_instance.mariadb_rds.endpoint)[0]
-    db_username  = aws_db_instance.mariadb_rds.username
+    rds_host     = split(":", aws_db_instance.mariadb.endpoint)[0]
+    db_username  = aws_db_instance.mariadb.username
   })
   user_data_replace_on_change = var.environment == "dev"
 
