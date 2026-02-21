@@ -32,7 +32,7 @@ resource "aws_db_instance" "mariadb_rds" {
   storage_encrypted = true
 
   # Database configuration
-  db_name  = "cinevisions"
+  db_name  = var.project_name
   username = "rds_master"
   password = data.aws_ssm_parameter.rds_master_password.value
 
