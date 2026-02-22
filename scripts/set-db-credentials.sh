@@ -1,8 +1,16 @@
 #!/bin/bash
 
 # Set profile
+if [ -f ~/.aws/config ] || [ -f ~/.aws/credentials ]; then
+	echo "Available AWS profiles:"
+	{
+		[ -f ~/.aws/config ] && grep -E '^\[profile ' ~/.aws/config | sed 's/\[profile \(.*\)\]/\1/'
+		[ -f ~/.aws/credentials ] && grep -E '^\[' ~/.aws/credentials | sed 's/\[\(.*\)\]/\1/'
+	} | sort -u | sed 's/^/  - /'
+	echo
+fi
 echo "Which AWS CLI profile do you want to use?"
-read -rp "Profile: " PROFILE
+read -rp "Profile [default]: " PROFILE
 PROFILE=${PROFILE:-default}
 echo "Using the '${PROFILE}'-Profile for all connections to the AWS CLI."
 echo
