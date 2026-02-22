@@ -28,9 +28,9 @@ esac
 
 
 # Ask for passwords
-read -sp "DB Master Password: " DBMasterPassword
+read -sp "DB Master Password: " DB_MASTER_PASSWORD
 echo
-read -sp "DB Password: " DBPassword
+read -sp "DB Password: " DB_PASSWORD
 echo
 
 
@@ -38,14 +38,14 @@ echo
 aws ssm put-parameter \
 	--name "/${PROJECT_NAME}/${ENVIRONMENT}/db/master_password" \
 	--type "SecureString" \
-	--value $DBMasterPassword \
+	--value $DB_MASTER_PASSWORD \
 	--overwrite \
 	--profile $PROFILE
 
 aws ssm put-parameter \
 	--name "/${PROJECT_NAME}/${ENVIRONMENT}/db/wp_password" \
 	--type "SecureString" \
-	--value $DBPassword \
+	--value $DB_PASSWORD \
 	--overwrite \
 	--profile $PROFILE
 
