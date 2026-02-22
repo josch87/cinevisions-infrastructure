@@ -2,19 +2,19 @@
 
 # Set profile
 echo "Which AWS CLI profile do you want to use?"
-read -p "Profile: " PROFILE
+read -rp "Profile: " PROFILE
 PROFILE=${PROFILE:-default}
 echo "Using the '${PROFILE}'-Profile for all connections to the AWS CLI."
 
 
 # Set project name
 echo "For which project do you want to set the password?"
-read -p "Project name: " PROJECT_NAME
+read -rp "Project name: " PROJECT_NAME
 
 
 # Set environment
 echo "For which environment do you want to set the passwords?"
-read -p "[dev|staging|prod]: " ENVIRONMENT
+read -rp "[dev|staging|prod]: " ENVIRONMENT
 
 case "$ENVIRONMENT" in
 	dev|staging|prod)
@@ -28,9 +28,9 @@ esac
 
 
 # Ask for passwords
-read -sp "DB Master Password: " DB_MASTER_PASSWORD
+read -rsp "DB Master Password: " DB_MASTER_PASSWORD
 echo
-read -sp "DB Password: " DB_PASSWORD
+read -rsp "DB Password: " DB_PASSWORD
 echo
 
 
