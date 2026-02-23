@@ -75,3 +75,13 @@ resource "aws_vpc_security_group_egress_rule" "rds_all" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
+
+resource "aws_security_group" "alb" {
+  name        = "${local.name_prefix}-alb-sg"
+  description = "Allow traffic to ALB"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "${local.name_prefix}-alb-sg"
+  }
+}
