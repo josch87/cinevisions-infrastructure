@@ -11,3 +11,14 @@ resource "aws_lb" "webserver" {
   }
 }
 
+resource "aws_lb_target_group" "webserver_tg" {
+  name        = "${local.name_prefix}-webserver-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "instance"
+
+  tags = {
+    Name = "${local.name_prefix}-webserver-lb"
+  }
+}
