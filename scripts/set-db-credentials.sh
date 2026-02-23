@@ -16,8 +16,17 @@ echo "Using the '${PROFILE}'-Profile for all connections to the AWS CLI."
 echo
 
 # Set project name
-echo "For which project do you want to set the password?"
-read -rp "Project name: " PROJECT_NAME
+while true; do
+	echo "For which project do you want to set the password?"
+	read -rp "Project name: " PROJECT_NAME
+	
+	if [[ "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
+		break
+	else
+		echo "Error: Project name must contain only lowercase letters, numbers, and hyphens."
+		echo
+	fi
+done
 echo
 
 # Set environment
