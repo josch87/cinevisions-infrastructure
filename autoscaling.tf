@@ -3,11 +3,11 @@ data "aws_default_tags" "default_tags" {}
 resource "aws_launch_template" "webserver" {
   name = "${local.name_prefix}-webserver-lt"
 
-  image_id               = data.aws_ami.amazon-linux_2023.id
-  instance_type          = var.webserver_instance_type
-  key_name               = var.key_name
+  image_id      = data.aws_ami.amazon-linux_2023.id
+  instance_type = var.webserver_instance_type
+  key_name      = var.key_name
 
-  depends_on             = [aws_db_instance.mariadb, data.aws_ssm_parameter.wp_password]
+  depends_on = [aws_db_instance.mariadb, data.aws_ssm_parameter.wp_password]
 
   iam_instance_profile {
     name = data.aws_iam_instance_profile.webserver.name
