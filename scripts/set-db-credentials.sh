@@ -20,10 +20,10 @@ while true; do
 	echo "For which project do you want to set the password?"
 	read -rp "Project name: " PROJECT_NAME
 	
-	if [[ "$PROJECT_NAME" =~ ^[a-z0-9-]+$ ]]; then
+	if [[ "$PROJECT_NAME" =~ ^[a-z][a-z0-9-]*$ ]]; then
 		break
 	else
-		echo "Error: Project name must contain only lowercase letters, numbers, and hyphens."
+		echo "Error: Project name must start with a letter and contain only lowercase letters, numbers, and hyphens."
 		echo
 	fi
 done

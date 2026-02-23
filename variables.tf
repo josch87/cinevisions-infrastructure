@@ -9,8 +9,13 @@ variable "project_name" {
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
-    error_message = "project_name must contain only lowercase letters, numbers, and hyphens"
+    condition     = can(regex("^[a-z][a-z0-9-]*$", var.project_name))
+    error_message = "project_name must start with a letter and contain only lowercase letters, numbers, and hyphens"
+  }
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9]*$", replace(var.project_name, "-", "")))
+    error_message = "project_name must remain valid for RDS database naming when hyphens are removed (must start with a letter)"
   }
 }
 
