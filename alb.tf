@@ -19,6 +19,21 @@ resource "aws_lb_target_group" "webserver_tg" {
   target_type = "instance"
 
   tags = {
-    Name = "${local.name_prefix}-webserver-lb"
+    Name = "${local.name_prefix}-webserver-tg"
+  }
+}
+
+resource "aws_lb_listener" "webserver_http" {
+  load_balancer_arn = aws_lb.webserver.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.webserver_tg.arn
+  }
+
+  tags = {
+    Name = "${local.name_prefix}-webserver-http-listener"
   }
 }
