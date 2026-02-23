@@ -1,17 +1,13 @@
 #!/bin/bash -e
 
 # Set Variables
-DBName="cinevisions"
+# shellcheck disable=SC2154
+# 'project_name', 'environment', 'db_username', 'rds_host' provided by Terraform templatefile()
+DBName="${project_name}"
 DBUser="wordpress"
-# shellcheck disable=SC2154
-# 'db_username' provided by Terraform templatefile()
 DBRootUser="${db_username}"
-# shellcheck disable=SC2154
-# 'environment' provided by Terraform templatefile()
-DBPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBRootPassword=$(aws ssm get-parameters --names "/cinevisions/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
-# shellcheck disable=SC2154
-# 'rds_host' provided by Terraform templatefile()
+DBPassword=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
+DBRootPassword=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
 DBHost="${rds_host}"
 WebRoot="/var/www/html"
 

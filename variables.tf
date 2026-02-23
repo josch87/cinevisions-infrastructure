@@ -4,6 +4,32 @@ variable "aws_profile" {
   default     = null
 }
 
+variable "project_name" {
+  description = "(Required) Project name for resource naming and isolation"
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]*$", var.project_name))
+    error_message = "project_name must start with a letter and contain only lowercase letters, numbers, and hyphens"
+  }
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9]*$", replace(var.project_name, "-", "")))
+    error_message = "project_name must remain valid for RDS database naming when hyphens are removed (must start with a letter)"
+  }
+}
+
+variable "owner" {
+  description = "(Required) Owner for resource tagging and isolation"
+  type        = string
+  default     = "Aljoscha Zöller - dev.aljoschazoeller.com"
+
+  validation {
+    condition     = can(regex("^[\\p{L}0-9 _.:/=+\\-@]*$", var.owner))
+    error_message = "owner may only contain unicode letters, digits, whitespace, or these symbols: _ . : / = + - @"
+  }
+}
+
 variable "environment" {
   description = "(Required) Environment to deploy into"
   type        = string
@@ -38,37 +64,37 @@ variable "aws_availability_zones" {
   }
 }
 
-variable "cinevisions_vpc_cidr" {
+variable "vpc_cidr" {
   description = "(Optional) CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/24"
 }
 
-variable "cinevisions_public_subnet_1_cidr" {
+variable "public_subnet_1_cidr" {
   description = "(Optional) CIDR block for the public subnet 1"
   type        = string
   default     = "10.0.0.0/28"
 }
 
-variable "cinevisions_private_subnet_1_cidr" {
+variable "private_subnet_1_cidr" {
   description = "(Optional) CIDR block for the private subnet 1"
   type        = string
   default     = "10.0.0.16/28"
 }
 
-variable "cinevisions_public_subnet_2_cidr" {
+variable "public_subnet_2_cidr" {
   description = "(Optional) CIDR block for the public subnet 2"
   type        = string
   default     = "10.0.0.32/28"
 }
 
-variable "cinevisions_private_subnet_2_cidr" {
+variable "private_subnet_2_cidr" {
   description = "(Optional) CIDR block for the private subnet 2"
   type        = string
   default     = "10.0.0.48/28"
 }
 
-variable "cinevisions_web_server_instance_type" {
+variable "webserver_instance_type" {
   description = "(Optional) Instance type for the web server"
   type        = string
   default     = "t3.micro"
