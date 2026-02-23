@@ -4,11 +4,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "CineVisions"
+      Project     = var.project_name
       Environment = var.environment
       ManagedBy   = "Terraform"
-      Owner       = "Aljoscha Zöller"
-      Contact     = "dev.aljoschazoeller.com"
+      Owner       = var.owner
     }
   }
 }

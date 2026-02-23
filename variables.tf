@@ -19,6 +19,17 @@ variable "project_name" {
   }
 }
 
+variable "owner" {
+  description = "(Required) Owner for resource tagging and isolation"
+  type        = string
+  default     = "Aljoscha Zöller - dev.aljoschazoeller.com"
+
+  validation {
+    condition     = can(regex("^[\\p{L}0-9 _.:/=+\\-@]*$", var.owner))
+    error_message = "owner may only contain unicode letters, digits, whitespace, or these symbols: _ . : / = + - @"
+  }
+}
+
 variable "environment" {
   description = "(Required) Environment to deploy into"
   type        = string
