@@ -18,6 +18,7 @@ resource "aws_launch_template" "webserver" {
     environment  = var.environment
     rds_host     = split(":", aws_db_instance.mariadb.endpoint)[0]
     db_username  = aws_db_instance.mariadb.username
+    efs_id       = aws_efs_file_system.wordpress_content.id
   }))
 
   tag_specifications {
