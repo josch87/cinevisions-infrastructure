@@ -24,18 +24,18 @@ resource "aws_vpc_security_group_egress_rule" "webserver_all" {
   ip_protocol = "-1"
 }
 
-resource "aws_security_group" "ssh" {
-  name        = "${local.name_prefix}-ssh-sg"
-  description = "SSH security group for developer access"
+resource "aws_security_group" "bastion" {
+  name        = "${local.name_prefix}-bastion-sg"
+  description = "Security group for bastion host (jump server)"
   vpc_id      = aws_vpc.main.id
 
   tags = {
-    Name = "${local.name_prefix}-ssh-sg"
+    Name = "${local.name_prefix}-bastion-sg"
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ssh_ssh" {
-  security_group_id = aws_security_group.ssh.id
+resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
+  security_group_id = aws_security_group.bastion.id
 
   cidr_ipv4   = var.my_local_public_ip
   from_port   = 22
@@ -43,8 +43,8 @@ resource "aws_vpc_security_group_ingress_rule" "ssh_ssh" {
   to_port     = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "ssh_all" {
-  security_group_id = aws_security_group.ssh.id
+resource "aws_vpc_security_group_egress_rule" "bastion_all" {
+  security_group_id = aws_security_group.bastion.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
