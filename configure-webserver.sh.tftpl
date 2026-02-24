@@ -47,8 +47,9 @@ exec_sql "GRANT ALL ON \`$DB_NAME\`.* TO '$DB_USER'@'%';"
 exec_sql "FLUSH PRIVILEGES;"
 
 
-# Install WordPress ONLY if wp-config.php doesn't exist
-if [ ! -f "$EFS_MOUNT/wp-config.php" ]; then
+# Install WordPress ONLY if wp-config.php doesn't exist (with distributed lock)
+if [ ! -f "$EFS_MOUNT/wp-config.php" ] && mkdir "$EFS_MOUNT/.wp-install.lock" 2>/dev/null; then
+    trap 'rmdir "$EFS_MOUNT/.wp-install.lock"' EXIT
     mkdir -p $WEB_ROOT
     wget https://wordpress.org/latest.tar.gz -P $WEB_ROOT
     cd $WEB_ROOT
