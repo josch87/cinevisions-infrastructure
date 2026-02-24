@@ -125,9 +125,9 @@ resource "aws_vpc_security_group_ingress_rule" "efs_nfs" {
   security_group_id = aws_security_group.efs.id
 
   referenced_security_group_id = aws_security_group.webserver.id
-  from_port   = 2049
-  ip_protocol = "tcp"
-  to_port     = 2049
+  from_port                    = 2049
+  ip_protocol                  = "tcp"
+  to_port                      = 2049
 }
 
 resource "aws_vpc_security_group_egress_rule" "efs_all" {
