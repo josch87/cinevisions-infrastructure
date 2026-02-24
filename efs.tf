@@ -1,5 +1,5 @@
 resource "aws_efs_file_system" "wordpress_content" {
-  creation_token = "wordpress-content"
+  creation_token = "${local.name_prefix}-wordpress-content-efs"
   encrypted      = true
 
   tags = {
