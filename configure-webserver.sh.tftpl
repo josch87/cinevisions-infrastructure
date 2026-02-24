@@ -10,6 +10,7 @@ DB_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db
 DB_ROOT_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
 DB_HOST="${rds_host}"
 WEB_ROOT="/var/www/html"
+EFS_ID="${efs_id}"
 
 # Install PHP and other tools
 dnf install -y php8.5
@@ -25,6 +26,11 @@ systemctl start httpd
 # Install MariaDB Client 10.11
 dnf install -y mariadb1011.x86_64
 
+# Mount EFS BEFORE WordPress installation
+dnf install -y amazon-efs-utils
+mount -t efs -o tls $EFS_ID:/ "/var/www"
+echo "$EFS_ID:/ "/var/www" efs _netdev,tls 0 0" >> /etc/fstab
+
 # Create WordPress database
 # shellcheck disable=SC2034
 MARIADB_CMD=(mariadb -h "$DB_HOST" -u "$DB_ROOT_USER" --password="$DB_ROOT_PASSWORD")
@@ -39,60 +45,65 @@ exec_sql "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';
 exec_sql "GRANT ALL ON \`$DB_NAME\`.* TO '$DB_USER'@'%';"
 exec_sql "FLUSH PRIVILEGES;"
 
-# Download and install WordPress
-wget https://wordpress.org/latest.tar.gz -P $WEB_ROOT
-cd $WEB_ROOT
-tar -zxvf latest.tar.gz
-cp -rvf wordpress/* .
-rm -R wordpress/ latest.tar.gz
 
-# Create wp-config.php (one folder above WEB_ROOT)
-sed \
-  -e "s|database_name_here|$DB_NAME|" \
-  -e "s|username_here|$DB_USER|" \
-  -e "s|password_here|$DB_PASSWORD|" \
-  -e "s|localhost|$DB_HOST|" \
-  wp-config-sample.php > ../wp-config.php
-cd ../
+# Install WordPress ONLY if wp-config.php doesn't exist
+if [ ! -f "/var/www/wp-config.php" ]; then
+    mkdir -p $WEB_ROOT
+    wget https://wordpress.org/latest.tar.gz -P $WEB_ROOT
+    cd $WEB_ROOT
+    tar -zxvf latest.tar.gz
+    cp -rvf wordpress/* .
+    rm -R wordpress/ latest.tar.gz
 
-# Normalize line endings to Unix (remove CR from CRLF) to avoid ^M issues on Linux
-sed -i 's/\r$//' wp-config.php
+    # Create wp-config.php (one folder above WEB_ROOT)
+    sed \
+      -e "s|database_name_here|$DB_NAME|" \
+      -e "s|username_here|$DB_USER|" \
+      -e "s|password_here|$DB_PASSWORD|" \
+      -e "s|localhost|$DB_HOST|" \
+      wp-config-sample.php > ../wp-config.php
+    cd ../
 
-sed -i "/Add any custom values between this line/a \
-define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);" wp-config.php
+    # Normalize line endings to Unix (remove CR from CRLF) to avoid ^M issues on Linux
+    sed -i 's/\r$//' wp-config.php
+
+    sed -i "/Add any custom values between this line/a \
+    define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);" wp-config.php
 
 
-# Fetch and inject WordPress secret keys/salts into wp-config.php
-SALTS_FILE="$(mktemp)"
-curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
-test -s "$SALTS_FILE"
+    # Fetch and inject WordPress secret keys/salts into wp-config.php
+    SALTS_FILE="$(mktemp)"
+    curl -fsSL "https://api.wordpress.org/secret-key/1.1/salt/" > "$SALTS_FILE"
+    test -s "$SALTS_FILE"
 
-awk -v salts="$SALTS_FILE" '
-  BEGIN { inserted=0; skipping=0 }
+    awk -v salts="$SALTS_FILE" '
+      BEGIN { inserted=0; skipping=0 }
 
-  # Start: when AUTH_KEY is found, output the new salts and start skipping the old block
-  $0 ~ /define\(\s*\x27AUTH_KEY\x27/ {
-    if (!inserted) { system("cat " salts); inserted=1 }
-    skipping=1
-    next
-  }
+      # Start: when AUTH_KEY is found, output the new salts and start skipping the old block
+      $0 ~ /define\(\s*\x27AUTH_KEY\x27/ {
+        if (!inserted) { system("cat " salts); inserted=1 }
+        skipping=1
+        next
+      }
 
-  # Skip everything until (and including) NONCE_SALT, so comments/blank lines inside the block do not matter
-  skipping == 1 {
-    if ($0 ~ /define\(\s*\x27NONCE_SALT\x27/) { skipping=0 }
-    next
-  }
+      # Skip everything until (and including) NONCE_SALT, so comments/blank lines inside the block do not matter
+      skipping == 1 {
+        if ($0 ~ /define\(\s*\x27NONCE_SALT\x27/) { skipping=0 }
+        next
+      }
 
-  { print }
-' wp-config.php > wp-config.php.new
+      { print }
+    ' wp-config.php > wp-config.php.new
 
-mv wp-config.php.new wp-config.php
-rm -f "$SALTS_FILE"
+    mv wp-config.php.new wp-config.php
+    rm -f "$SALTS_FILE"
 
-# Grant permissions
+    # Grant permissions
+    chown -R ec2-user:apache /var/www/
+    chmod 2755 /var/www/
+    find /var/www/ -type d -exec chmod 2775 {} \;
+    find /var/www/ -type f -exec chmod 0664 {} \;
+    chmod 440 /var/www/wp-config.php
+fi
+
 usermod -a -G apache ec2-user
-chown -R ec2-user:apache /var/www/
-chmod 2755 /var/www/
-find /var/www/ -type d -exec chmod 2775 {} \;
-find /var/www/ -type f -exec chmod 0664 {} \;
-chmod 440 /var/www/wp-config.php
