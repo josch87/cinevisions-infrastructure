@@ -1,4 +1,4 @@
-# CineVisions Infrastructure
+# Film Festival Infrastructure
 
 This Terraform project provisions a highly available AWS infrastructure for a WordPress-based web application with automated server configuration.
 
