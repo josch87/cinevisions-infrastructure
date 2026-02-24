@@ -42,7 +42,15 @@ resource "aws_autoscaling_group" "webserver" {
   target_group_arns   = [aws_lb_target_group.webserver_tg.arn]
 
   launch_template {
-    id = aws_launch_template.webserver.id
+    id      = aws_launch_template.webserver.id
+    version = "$Latest"
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
   }
 
   # Restricted in the Sandbox – no identity-based policy allows the autoscaling:CreateOrUpdateTags action
