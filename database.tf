@@ -1,13 +1,3 @@
-data "aws_ssm_parameter" "rds_master_password" {
-  name            = "/${var.project_name}/${var.environment}/db/master_password"
-  with_decryption = true
-}
-
-data "aws_ssm_parameter" "wp_password" {
-  name            = "/${var.project_name}/${var.environment}/db/wp_password"
-  with_decryption = false # Secret value not needed in decrypted form; Terraform still stores the (encrypted) value in state and this is used only to assert the parameter exists
-}
-
 resource "aws_db_subnet_group" "database" {
   name       = "${local.name_prefix}-rds-subnet-group"
   subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
