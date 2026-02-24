@@ -78,13 +78,6 @@ resource "aws_vpc_security_group_ingress_rule" "rds_mariadb" {
   to_port                      = 3306
 }
 
-resource "aws_vpc_security_group_egress_rule" "rds_all" {
-  security_group_id = aws_security_group.rds.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "-1"
-}
-
 resource "aws_security_group" "alb" {
   name        = "${local.name_prefix}-alb-sg"
   description = "Allow traffic to ALB"
