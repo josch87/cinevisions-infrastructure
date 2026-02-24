@@ -110,3 +110,22 @@ resource "aws_vpc_security_group_egress_rule" "alb_all" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
+
+resource "aws_security_group" "efs" {
+  name        = "${local.name_prefix}-efs-sg"
+  description = "Allow traffic from webservers to EFS"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "${local.name_prefix}-efs-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "efs_nfs" {
+  security_group_id = aws_security_group.efs.id
+
+  referenced_security_group_id = aws_security_group.webserver.id
+  from_port   = 2049
+  ip_protocol = "tcp"
+  to_port     = 2049
+}
