@@ -1,5 +1,3 @@
-
-
 resource "aws_launch_template" "webserver" {
   name = "${local.name_prefix}-webserver-lt"
 
