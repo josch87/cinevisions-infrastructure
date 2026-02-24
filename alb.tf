@@ -18,6 +18,17 @@ resource "aws_lb_target_group" "webserver_tg" {
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
 
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 30
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200,301,302"
+  }
+
   tags = {
     Name = "${local.name_prefix}-webserver-tg"
   }
