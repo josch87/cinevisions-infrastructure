@@ -1,9 +1,9 @@
-output "webserver_public_ip" {
-  description = "Public IP of the web server"
-  value       = aws_instance.webserver.public_ip
+output "alb_public_dns" {
+  description = "Public DNS of the web servers application load balancer"
+  value       = aws_lb.webserver.dns_name
 }
 
-output "webserver_public_dns" {
-  description = "Public DNS of the web server"
-  value       = aws_instance.webserver.public_dns
+output "bastion_host_public_ip" {
+  description = "Public IP of the bastion host"
+  value       = aws_instance.bastion_host.public_ip
 }
