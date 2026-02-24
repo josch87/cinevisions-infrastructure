@@ -1,4 +1,4 @@
-data "aws_default_tags" "default_tags" {}
+
 
 resource "aws_launch_template" "webserver" {
   name = "${local.name_prefix}-webserver-lt"
