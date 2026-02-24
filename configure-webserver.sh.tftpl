@@ -3,13 +3,13 @@
 # Set Variables
 # shellcheck disable=SC2154
 # 'project_name', 'environment', 'db_username', 'rds_host' provided by Terraform templatefile()
-DBName="${project_name}"
-DBUser="wordpress"
-DBRootUser="${db_username}"
-DBPassword=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBRootPassword=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
-DBHost="${rds_host}"
-WebRoot="/var/www/html"
+DB_NAME="${project_name}"
+DB_USER="wordpress"
+DB_ROOT_USER="${db_username}"
+DB_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
+DB_ROOT_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
+DB_HOST="${rds_host}"
+WEB_ROOT="/var/www/html"
 
 # Install PHP and other tools
 dnf install -y php8.5
@@ -27,31 +27,31 @@ dnf install -y mariadb1011.x86_64
 
 # Create WordPress database
 # shellcheck disable=SC2034
-MARIADB_CMD=(mariadb -h "$DBHost" -u "$DBRootUser" --password="$DBRootPassword")
+MARIADB_CMD=(mariadb -h "$DB_HOST" -u "$DB_ROOT_USER" --password="$DB_ROOT_PASSWORD")
 
 exec_sql() {
   # shellcheck disable=SC2288
   echo "$1" | "$${MARIADB_CMD[@]}"
 }
 
-exec_sql "CREATE DATABASE IF NOT EXISTS \`$DBName\`;"
-exec_sql "CREATE USER IF NOT EXISTS '$DBUser'@'%' IDENTIFIED BY '$DBPassword';"
-exec_sql "GRANT ALL ON \`$DBName\`.* TO '$DBUser'@'%';"
+exec_sql "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;"
+exec_sql "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';"
+exec_sql "GRANT ALL ON \`$DB_NAME\`.* TO '$DB_USER'@'%';"
 exec_sql "FLUSH PRIVILEGES;"
 
 # Download and install WordPress
-wget https://wordpress.org/latest.tar.gz -P $WebRoot
-cd $WebRoot
+wget https://wordpress.org/latest.tar.gz -P $WEB_ROOT
+cd $WEB_ROOT
 tar -zxvf latest.tar.gz
 cp -rvf wordpress/* .
 rm -R wordpress/ latest.tar.gz
 
-# Create wp-config.php (one folder above WebRoot)
+# Create wp-config.php (one folder above WEB_ROOT)
 sed \
-  -e "s|database_name_here|$DBName|" \
-  -e "s|username_here|$DBUser|" \
-  -e "s|password_here|$DBPassword|" \
-  -e "s|localhost|$DBHost|" \
+  -e "s|database_name_here|$DB_NAME|" \
+  -e "s|username_here|$DB_USER|" \
+  -e "s|password_here|$DB_PASSWORD|" \
+  -e "s|localhost|$DB_HOST|" \
   wp-config-sample.php > ../wp-config.php
 cd ../
 
