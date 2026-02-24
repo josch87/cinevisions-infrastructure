@@ -9,7 +9,8 @@ DB_ROOT_USER="${db_username}"
 DB_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/wp_password" --query="Parameters[0].Value" --with-decryption --output text)
 DB_ROOT_PASSWORD=$(aws ssm get-parameters --names "/${project_name}/${environment}/db/master_password" --query="Parameters[0].Value" --with-decryption --output text)
 DB_HOST="${rds_host}"
-WEB_ROOT="/var/www/html"
+EFS_MOUNT="/var/www"
+WEB_ROOT="$EFS_MOUNT/html"
 EFS_ID="${efs_id}"
 
 # Install PHP and other tools
@@ -28,8 +29,8 @@ dnf install -y mariadb1011.x86_64
 
 # Mount EFS BEFORE WordPress installation
 dnf install -y amazon-efs-utils
-mount -t efs -o tls $EFS_ID:/ "/var/www"
-echo "$EFS_ID:/ "/var/www" efs _netdev,tls 0 0" >> /etc/fstab
+mount -t efs -o tls $EFS_ID:/ $EFS_MOUNT
+echo "$EFS_ID:/ $EFS_MOUNT efs _netdev,tls 0 0" >> /etc/fstab
 
 # Create WordPress database
 # shellcheck disable=SC2034
@@ -47,7 +48,7 @@ exec_sql "FLUSH PRIVILEGES;"
 
 
 # Install WordPress ONLY if wp-config.php doesn't exist
-if [ ! -f "/var/www/wp-config.php" ]; then
+if [ ! -f "$EFS_MOUNT/wp-config.php" ]; then
     mkdir -p $WEB_ROOT
     wget https://wordpress.org/latest.tar.gz -P $WEB_ROOT
     cd $WEB_ROOT
@@ -99,11 +100,11 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     rm -f "$SALTS_FILE"
 
     # Grant permissions
-    chown -R ec2-user:apache /var/www/
-    chmod 2755 /var/www/
-    find /var/www/ -type d -exec chmod 2775 {} \;
-    find /var/www/ -type f -exec chmod 0664 {} \;
-    chmod 440 /var/www/wp-config.php
+    chown -R ec2-user:apache $EFS_MOUNT
+    chmod 2755 $EFS_MOUNT
+    find $EFS_MOUNT -type d -exec chmod 2775 {} \;
+    find $EFS_MOUNT -type f -exec chmod 0664 {} \;
+    chmod 440 $EFS_MOUNT/wp-config.php
 fi
 
 usermod -a -G apache ec2-user
