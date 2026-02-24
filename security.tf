@@ -122,10 +122,3 @@ resource "aws_vpc_security_group_ingress_rule" "efs_nfs" {
   ip_protocol                  = "tcp"
   to_port                      = 2049
 }
-
-resource "aws_vpc_security_group_egress_rule" "efs_all" {
-  security_group_id = aws_security_group.efs.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "-1"
-}
