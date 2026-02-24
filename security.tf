@@ -11,7 +11,7 @@ resource "aws_security_group" "webserver" {
 resource "aws_vpc_security_group_ingress_rule" "webserver_http" {
   security_group_id = aws_security_group.webserver.id
 
-  cidr_ipv4   = "0.0.0.0/0"
+  referenced_security_group_id = aws_security_group.alb.id
   from_port   = 80
   ip_protocol = "tcp"
   to_port     = 80
