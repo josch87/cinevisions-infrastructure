@@ -96,7 +96,7 @@ The infrastructure includes:
 - **Load Balancing**: Application Load Balancer in public subnets for traffic distribution
 - **Compute**: Auto Scaling Group (1-4 instances) with Amazon Linux 2023 in private subnets
 - **Bastion Host**: EC2 instance (t3.micro) in public subnet for secure SSH access
-- **Storage**: Elastic File System (EFS) for shared WordPress content across all instances
+- **Storage**: Elastic File System (EFS) with encryption for shared WordPress content across all instances
 - **Database**: Managed MariaDB 11.8 RDS instance in private subnets (Multi-AZ, encrypted storage)
 - **NAT Gateway**: Enables outbound internet traffic from private subnets
 - **Web Server**: Apache HTTP Server with PHP 8.5
@@ -109,16 +109,19 @@ The infrastructure includes:
 - Web servers in private subnets without direct internet access
 - HTTP (port 80) accessible via ALB to the public
 - Web server access only allowed from ALB Security Group
+- ALB egress restricted to web server Security Group (HTTP only)
 - SSH access to web servers only possible via Bastion Host
 - RDS database access restricted to web server Security Group
 - EFS access restricted to web server Security Group (port 2049)
 - Database credentials stored in AWS Systems Manager Parameter Store (SecureString)
 - WordPress config file permissions set to 440
 - RDS storage encryption enabled
+- EFS encryption enabled
 - SSL/TLS connection to RDS enforced (MYSQLI_CLIENT_SSL)
 - Deletion protection enabled for production environment
 - Automated backups (10 days retention for prod, 1 day for dev/staging)
 - Health checks via ALB with ELB-based Auto Scaling health check
+- Distributed lock mechanism prevents race conditions during WordPress installation
 
 ## Cleanup
 
