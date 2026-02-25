@@ -90,7 +90,7 @@ The infrastructure includes:
 
 ## Architecture
 
-![Architecture Diagram](diagram/architecture-diagram_level2.png)
+![Architecture Diagram](diagram/architecture-diagram_level3.png)
 
 - **Network**: Multi-AZ VPC with public and private subnets across two Availability Zones
 - **Load Balancing**: Application Load Balancer in public subnets for traffic distribution
